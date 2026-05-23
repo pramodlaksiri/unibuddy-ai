@@ -8,3 +8,4 @@ sentence-transformers
 duckduckgo-search
 torch
 torchvision
+protobuf<=3.20.3
