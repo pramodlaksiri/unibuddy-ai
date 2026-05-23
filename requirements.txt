@@ -6,3 +6,5 @@ chromadb
 pypdf
 sentence-transformers
 duckduckgo-search
+torch
+torchvision
