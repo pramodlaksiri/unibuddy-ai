@@ -11,7 +11,7 @@ st.title("🎓 UniBuddy AI - Smart Assistant")
 st.write("Answers from local handbook & live university website.")
 
 db_dir = "./db_storage"
-UNI_DOMAIN = "uom.lk" # ඔයාගේ යුනිවර්සිටි ඩොමේන් එකට වෙනස් කරගන්න
+UNI_DOMAIN = "https://www.vau.ac.lk/" 
 
 if not os.path.exists(db_dir):
     st.error("❌ Database not found! Please check deployment.")
@@ -28,7 +28,7 @@ else:
             st.error("Please add GROQ_API_KEY to Streamlit Secrets!")
             st.stop()
             
-        llm = ChatGroq(groq_api_key=groq_key, model_name="llama3-8b-8192")
+        llm = ChatGroq(groq_api_key=groq_key, model_name="llama-3.1-8b-instant")
         return vectorstore, llm
 
     vectorstore, llm = load_base_models()
