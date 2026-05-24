@@ -4,6 +4,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_groq import ChatGroq
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain.agents import initialize_agent, AgentType
+from langchain_community.callbacks.streamlit import StreamlitCallbackHandler # අලුතෙන් ගෙනාපු එක
 import os
 
 st.set_page_config(page_title="UniBuddy AI", layout="centered")
@@ -21,14 +22,14 @@ else:
         embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         vectorstore = Chroma(persist_directory=db_dir, embedding_function=embeddings)
         
-        # Secrets හරහා API Key එක ගැනීම
         try:
             groq_key = st.secrets["GROQ_API_KEY"]
         except:
             st.error("Please add GROQ_API_KEY to Streamlit Secrets!")
             st.stop()
             
-        llm = ChatGroq(groq_api_key=groq_key, model_name="llama-3.1-8b-instant")
+        # මෙතන streaming=True කියලා දැම්මා
+        llm = ChatGroq(groq_api_key=groq_key, model_name="llama-3.1-8b-instant", streaming=True)
         return vectorstore, llm
 
     vectorstore, llm = load_base_models()
@@ -59,7 +60,6 @@ else:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # මෙන්න මේ ටික තමයි අපි අලුතෙන් එකතු කරපු System Prompt එක
     custom_prefix = """You are a helpful assistant for UniBuddy AI. 
 The user might ask questions in English, Sinhala, or Singlish (Sinhala language written using Roman/English alphabet). 
 You must carefully understand Singlish and Sinhala queries, search the provided documents or tools, and respond accurately in the same language or script the user used.
@@ -71,7 +71,6 @@ CRITICAL RULES:
 
 Answer the following questions as best you can. You have access to the following tools:"""
 
-    # Agent ව හදද්දී අර උපදෙස් ටික (custom_prefix) එකතු කරලා තියෙනවා
     agent = initialize_agent(
         tools, 
         llm, 
@@ -93,8 +92,12 @@ Answer the following questions as best you can. You have access to the following
             st.markdown(user_input)
 
         with st.chat_message("assistant"):
-            with st.spinner("Agent is searching..."):
-                response = agent.run(user_input)
-                st.markdown(response)
+            # අලුතෙන් දාපු Streaming Callback එක මෙතන තියෙනවා
+            st_callback = StreamlitCallbackHandler(st.container())
+            
+            # Agent දුවද්දී Callback එක පාස් කරනවා
+            response = agent.run(user_input, callbacks=[st_callback])
+            
+            st.markdown(response)
                 
         st.session_state.messages.append({"role": "assistant", "content": response})
