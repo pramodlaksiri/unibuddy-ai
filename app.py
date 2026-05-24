@@ -59,12 +59,23 @@ else:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # මෙන්න මේ ටික තමයි අපි අලුතෙන් එකතු කරපු System Prompt එක
+    custom_prefix = """You are a helpful assistant for UniBuddy AI. 
+The user might ask questions in English, Sinhala, or Singlish (Sinhala language written using Roman/English alphabet). 
+You must carefully understand Singlish and Sinhala queries, search the provided documents or tools, and respond accurately in the same language or script the user used.
+
+Answer the following questions as best you can. You have access to the following tools:"""
+
+    # Agent ව හදද්දී අර උපදෙස් ටික (custom_prefix) එකතු කරලා තියෙනවා
     agent = initialize_agent(
         tools, 
         llm, 
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
         verbose=True, 
-        handle_parsing_errors=True
+        handle_parsing_errors=True,
+        agent_kwargs={
+            "prefix": custom_prefix
+        }
     )
 
     for message in st.session_state.messages:
