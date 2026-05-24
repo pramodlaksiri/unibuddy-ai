@@ -64,6 +64,11 @@ else:
 The user might ask questions in English, Sinhala, or Singlish (Sinhala language written using Roman/English alphabet). 
 You must carefully understand Singlish and Sinhala queries, search the provided documents or tools, and respond accurately in the same language or script the user used.
 
+CRITICAL RULES:
+1. Keep your answers VERY concise, short, and to the point.
+2. DO NOT provide extra information that the user did not explicitly ask for.
+3. Only answer the exact question asked.
+
 Answer the following questions as best you can. You have access to the following tools:"""
 
     # Agent ව හදද්දී අර උපදෙස් ටික (custom_prefix) එකතු කරලා තියෙනවා
